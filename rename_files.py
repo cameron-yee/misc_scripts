@@ -2,6 +2,7 @@ import sys
 import os
 from glob import glob
 import string
+import re
 
 def inp():
     f = input('File Path: ')
@@ -16,11 +17,19 @@ def stripPunctuation(name):
     return final_name
 
 
+def removeDoubleFileType(name_2):
+    final_name = re.sub('docx.pdf$','pdf', name_2)   
+    return final_name
+
+
 def renameFile(f):
     base = os.path.basename(f)
     base_lower = base.lower()
     name = base_lower.replace(' ','_') 
-    final_name = stripPunctuation(name)
+    name_2 = stripPunctuation(name)
+    
+    final_name = removeDoubleFileType(name_2)
+
     dirname = os.path.dirname(f)
     sf = str(f)
     sdn = str(dirname + '/' + final_name)
