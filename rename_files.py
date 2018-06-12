@@ -27,7 +27,7 @@ def renameFile(f):
     base_lower = base.lower()
     name = base_lower.replace(' ','_') 
     name_2 = stripPunctuation(name)
-    
+
     final_name = removeDoubleFileType(name_2)
 
     dirname = os.path.dirname(f)
@@ -38,8 +38,12 @@ def renameFile(f):
 
 def getFilePaths(directory):
     files = []
-    files.append(glob(directory + '{}'.format('/*.pdf'), recursive=True))
-    files = files[0]
+    dir_files = os.listdir()
+    relevant_files = [f for f in dir_files if f not in ['.rename_files.py', '.DS_Store', '.localized']]
+
+    for f in relevant_files:
+        files.append(directory + '/{}'.format(f))
+
     return files
 
 
