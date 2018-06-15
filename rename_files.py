@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 import sys
 import os
 from glob import glob
@@ -38,7 +39,7 @@ def renameFile(f):
 
 def getFilePaths(directory):
     files = []
-    dir_files = os.listdir()
+    dir_files = os.listdir(directory)
     relevant_files = [f for f in dir_files if f not in ['.rename_files.py', '.DS_Store', '.localized']]
 
     for f in relevant_files:
@@ -48,11 +49,8 @@ def getFilePaths(directory):
 
 
 if __name__ == '__main__':
-    #f = inp()
-    #directory = '/Users/cyee/Desktop/pdf_concat/mnstl_elm_segment_7/lesson_1'
-    n = '1'
-    stripPunctuation(n)
-    directory = os.getcwd()
+    #Hardcoded to automate with fswatch
+    directory = '/Users/cyee/Downloads'
     files = getFilePaths(directory)
     for f in files:
         renameFile(f)
