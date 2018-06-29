@@ -5,11 +5,6 @@ from glob import glob
 import string
 import re
 
-def inp():
-    f = input('File Path: ')
-    return f
-
-
 def stripPunctuation(name):
     x = string.punctuation.replace('_','')
     punct = x.replace('.','')
