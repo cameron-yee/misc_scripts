@@ -4,6 +4,7 @@ import os
 from glob import glob
 import string
 import re
+import time
 
 def stripPunctuation(name):
     x = string.punctuation.replace('_','')
@@ -19,17 +20,25 @@ def removeDoubleFileType(name_2):
 
 
 def renameFile(f):
-    base = os.path.basename(f)
-    base_lower = base.lower()
-    name = base_lower.replace(' ','_') 
-    name_2 = stripPunctuation(name)
+    try:
+        base = os.path.basename(f)
+        base_lower = base.lower()
+        name = base_lower.replace(' ','_') 
+        name_2 = stripPunctuation(name)
 
-    final_name = removeDoubleFileType(name_2)
+        final_name = removeDoubleFileType(name_2)
 
-    dirname = os.path.dirname(f)
-    sf = str(f)
-    sdn = str(dirname + '/' + final_name)
-    os.rename(sf,sdn)
+        dirname = os.path.dirname(f)
+        sf = str(f)
+        sdn = str(dirname + '/' + final_name)
+        os.rename(sf,sdn)
+    except(FileNotFoundError):
+        if count < 500:
+            time.sleep(10)
+            count += 1
+            renameFile(f)
+        else:
+            print('Download took too long to rename.  Possible download failure.')
 
 
 def getFilePaths(directory):
@@ -47,5 +56,6 @@ if __name__ == '__main__':
     #Hardcoded to automate with fswatch
     directory = '/Users/cyee/Downloads'
     files = getFilePaths(directory)
+    count = 0
     for f in files:
         renameFile(f)
