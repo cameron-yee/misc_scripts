@@ -75,18 +75,40 @@ def editExcel(workbook, hours, code, pay_period, turn_in_date):
     hours_excel = workbook
     ws = hours_excel.active
 
-    edit_cell = ws['C{ROW}'.format(ROW=codes[code])]
-
-    edit_cell.value = 0 if edit_cell.value == None else edit_cell.value
-    previous_value = float(edit_cell.value)
-    new_value = previous_value + (float(hours)/float(80)*float(100))
-    rounded_value = round(new_value, 1)
-    edit_cell.value =  rounded_value
-
-    #percent_dist_cell = ws['F{ROW}'.format(ROW=codes[code])]
-    #percent_dist_cell.value = 'No Time' if edit_cell.value == 0 else percent_dist_cell.value + '%'
-
     ws['E7'] = pay_period[1]
+
+    #Gets active projects and sorts alphabetically
+    def sortProjects():
+        count = 0
+        active_projects = {}
+
+        for r in range(12,28):
+            if ws['C{}'.format(r)].value is not None:
+                active_projects[ws['B{}'.format(r)].value] = ws['C{}'.format(r)].value
+                count += 1
+
+        if code.upper() in active_projects:
+            active_projects[code.upper()] += (float(hours)/float(80)*float(100))
+        else:
+            active_projects[code.upper()] = (float(hours)/float(80)*float(100))
+
+        sorted_projects = sorted(active_projects.items(), key=lambda a: a[0])
+        return sorted_projects
+
+    sorted_projects = sortProjects()
+
+    #TODO: Refactor 3 for loops into 1-2
+    #Alphabetically edits rows with active projects and hours
+    row=12
+    for pair in sorted_projects: 
+        ws['B{}'.format(row)].value = pair[0]
+        ws['C{}'.format(row)].value = pair[1]
+        row += 1
+
+    #Sets values for all empty rows
+    for i in range(row, 28):
+        ws['B{}'.format(i)].value = 'Active Project'
+        ws['C{}'.format(i)].value = None
 
     hours_excel.save('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
 
@@ -126,26 +148,26 @@ def loopScript(clear=None):
         print('\nGoodbye Sir')
 
 
-def fix_template():
-    hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/template.xlsx')
-    ws = hours_excel.active
-    ###ENTER FIX HERE
-    hours_excel.save('/Users/cyee/Documents/Timesheets/template.xlsx')
-
-
 if __name__ == '__main__':
-    codes = {
-            'comm': 12,
-            'pow2': 15,
-            'prod': 18,
-            '3dmss': 13,
-            'mnstl': 14,
-            #'hlit': ,
-            'psspt': 16,
-            'vatl': 17
-            }
+    codes = ['comm','prod','3dmss','mnstl','hlit','psspt','vatl', 'prch1']
 
     try:
         loopScript(sys.argv[1]) if len(sys.argv) > 1 else loopScript()
     except KeyboardInterrupt:
         print('\nGoodbye Sir')
+
+
+
+
+
+
+
+
+
+#def fix_template():
+#    hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/template.xlsx')
+#    ws = hours_excel.active
+#    ###ENTER FIX HERE
+#    hours_excel.save('/Users/cyee/Documents/Timesheets/template.xlsx')
+
+
