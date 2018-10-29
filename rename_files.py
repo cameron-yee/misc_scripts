@@ -19,7 +19,7 @@ def removeDoubleFileType(name_2):
     return final_name
 
 
-def renameFile(f):
+def renameFile(f, count):
     try:
         base = os.path.basename(f)
         base_lower = base.lower()
@@ -36,7 +36,7 @@ def renameFile(f):
         if count < 500:
             time.sleep(10)
             count += 1
-            renameFile(f)
+            renameFile(f, count)
         else:
             print('Download took too long to rename.  Possible download failure.')
 
@@ -58,4 +58,4 @@ if __name__ == '__main__':
     files = getFilePaths(directory)
     count = 0
     for f in files:
-        renameFile(f)
+        renameFile(f, count)
