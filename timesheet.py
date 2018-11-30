@@ -5,13 +5,13 @@ import sys
 import re
 #from tkinter import *
 
-def inputHours():
-    hours = input('Enter hours: ')
-    m = re.search('[a-zA-Z]', hours)
+def inputPercentage():
+    percentage = input('Enter percentage: ')
+    m = re.search('[a-zA-Z]', percentage)
     if m is not None:
-        print('Enter valid hours')
-        return inputHours()
-    return hours
+        print('Enter valid percentage')
+        return inputPercentage()
+    return percentage
 
 
 def inputProjectCode():
@@ -71,7 +71,7 @@ def getTurnInDate(pay_period_date):
     return turn_in_date
 
 
-def editExcel(workbook, hours, code, pay_period, turn_in_date):
+def editExcel(workbook, percentage, code, pay_period, turn_in_date):
     hours_excel = workbook
     ws = hours_excel.active
 
@@ -88,9 +88,9 @@ def editExcel(workbook, hours, code, pay_period, turn_in_date):
                 count += 1
 
         if code.upper() in active_projects:
-            active_projects[code.upper()] += (float(hours)/float(80)*float(100))
+            active_projects[code.upper()] += percentage #(float(hours)/float(80)*float(100))
         else:
-            active_projects[code.upper()] = (float(hours)/float(80)*float(100))
+            active_projects[code.upper()] = percentage #(float(hours)/float(80)*float(100))
 
         sorted_projects = sorted(active_projects.items(), key=lambda a: a[0])
         return sorted_projects
@@ -113,7 +113,7 @@ def editExcel(workbook, hours, code, pay_period, turn_in_date):
     hours_excel.save('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
 
 
-def addHours(hours, code):
+def addPercentage(percentage, code):
     pay_period = getPayPeriod()
 
     turn_in_date = getTurnInDate(pay_period[0])
@@ -123,7 +123,7 @@ def addHours(hours, code):
     except:
         hours_excel = clearWorkbook()
 
-    editExcel(hours_excel, hours, code, pay_period, turn_in_date)
+    editExcel(hours_excel, percentage, code, pay_period, turn_in_date)
 
 
 def clearWorkbook():
@@ -139,9 +139,9 @@ def loopScript(clear=None):
         if clear == 'clear':
             clearWorkbook()
 
-        hours = inputHours()
+        percentage = inputPercentage()
         code = inputProjectCode()
-        addHours(hours, code)
+        addPercentage(percentage, code)
 
         loopScript()
     except KeyboardInterrupt:
@@ -149,7 +149,7 @@ def loopScript(clear=None):
 
 
 if __name__ == '__main__':
-    codes = ['comm','prod','3dmss','mnstl','hlit','psspt','vatl', 'prch1']
+    codes = ['comm','web','prod','3dmss','hlit','psspt','vatl','prch1']
 
     try:
         loopScript(sys.argv[1]) if len(sys.argv) > 1 else loopScript()
