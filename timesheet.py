@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 from openpyxl import Workbook, load_workbook
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import sys
 import re
 #from tkinter import *
@@ -25,40 +25,54 @@ def inputProjectCode():
 
 
 def getTimePeriod():
-    today = date.today().strftime('%m-%d-%y')
+    #today = date.today().strftime('%m-%d-%y')
+    today = datetime.today()
     return today
 
 
 def getPayPeriod():
-    pay_periods = {
-        '06-17-18': '=S21',
-        '07-01-18': '=S22',
-        '07-15-18': '=S23',
-        '07-29-18': '=S24',
-        '08-12-18': '=S25',
-        '08-26-18': '=S26',
-        '09-09-18': '=S27',
-        '09-23-18': '=S28',
-        '10-07-18': '=S29',
-        '10-21-18': '=S30',
-        '11-04-18': '=S31',
-        '11-18-18': '=S32',
-        '12-02-18': '=S33',
-    }
+    pay_periods = [
+        '12/16/18',
+        '12/30/18',
+        '01/13/19',
+        '01/27/19',
+        '02/10/19',
+        '02/24/19',
+        '03/10/19',
+        '03/24/19',
+        '04/07/19',
+        '04/21/19',
+        '05/05/19',
+        '05/19/19',
+        '06/02/19',
+        '06/16/19',
+        '06/30/19',
+        '07/14/19',
+        '07/28/19',
+        '08/11/19',
+        '08/25/19',
+        '09/08/19',
+        '09/22/19',
+        '10/06/19',
+        '10/20/19',
+        '11/03/19',
+        '11/17/19',
+        '12/01/19',
+    ]
 
     today = getTimePeriod()
 
-    previous_pay_period = '06-17-18'
+    previous_pay_period = '12/16/18'
     cell_value = None
     pay_period = None
 
-    for key, value in sorted(pay_periods.items()):
-        if today < key and today > previous_pay_period:
-            pay_period = previous_pay_period #date as str
-            cell_value = pay_periods[previous_pay_period] #value of last dict key
-            return pay_period, cell_value
-
-        previous_pay_period = key
+    for date in pay_periods:
+        if today < datetime.strptime(date, '%m/%d/%y') and today > datetime.strptime(previous_pay_period, '%m/%d/%y'):
+            #pay_period = previous_pay_period #date as str
+            pay_period = date #date as str
+            #cell_value = pay_periods[previous_pay_period] #value of last dict key
+            print(type(pay_period))
+            return pay_period
 
 
 def getTurnInDate(pay_period_date):
@@ -75,7 +89,7 @@ def editExcel(workbook, percentage, code, pay_period, turn_in_date):
     hours_excel = workbook
     ws = hours_excel.active
 
-    ws['E7'] = pay_period[1]
+    ws['E7'] = pay_period
 
     #Gets active projects and sorts alphabetically
     def sortProjects():
@@ -116,7 +130,7 @@ def editExcel(workbook, percentage, code, pay_period, turn_in_date):
 def addPercentage(percentage, code):
     pay_period = getPayPeriod()
 
-    turn_in_date = getTurnInDate(pay_period[0])
+    turn_in_date = getTurnInDate(pay_period)
 
     try:
         hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
@@ -127,7 +141,7 @@ def addPercentage(percentage, code):
 
 
 def clearWorkbook():
-    pay_period = getPayPeriod()[0]
+    pay_period = getPayPeriod()
     turn_in_date = getTurnInDate(pay_period)
     hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/template.xlsx')
     hours_excel.save('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
