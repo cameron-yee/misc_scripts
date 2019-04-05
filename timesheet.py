@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 from openpyxl import Workbook, load_workbook
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 import sys
 import re
 #from tkinter import *
@@ -25,54 +25,46 @@ def inputProjectCode():
 
 
 def getTimePeriod():
-    #today = date.today().strftime('%m-%d-%y')
-    today = datetime.today()
+    today = date.today().strftime('%m-%d-%y')
     return today
 
 
 def getPayPeriod():
-    pay_periods = [
-        '12/16/18',
-        '12/30/18',
-        '01/13/19',
-        '01/27/19',
-        '02/10/19',
-        '02/24/19',
-        '03/10/19',
-        '03/24/19',
-        '04/07/19',
-        '04/21/19',
-        '05/05/19',
-        '05/19/19',
-        '06/02/19',
-        '06/16/19',
-        '06/30/19',
-        '07/14/19',
-        '07/28/19',
-        '08/11/19',
-        '08/25/19',
-        '09/08/19',
-        '09/22/19',
-        '10/06/19',
-        '10/20/19',
-        '11/03/19',
-        '11/17/19',
-        '12/01/19',
-    ]
+    pay_periods = {
+        '03-24-19': '=S15',
+        '04-07-19': '=S16',
+        '04-21-19': '=S17',
+        '05-05-19': '=S18',
+        '05-19-19': '=S19',
+        '06-02-19': '=S20',
+        '06-16-19': '=S21',
+        '06-30-19': '=S22',
+        '07-14-19': '=S23',
+        '07-28-19': '=S24',
+        '08-11-19': '=S25',
+        '08-25-19': '=S26',
+        '09-08-19': '=S27',
+        '09-22-19': '=S28',
+        '10-06-19': '=S29',
+        '10-20-19': '=S30',
+        '11-03-19': '=S31',
+        '11-17-19': '=S32',
+        '12-01-19': '=S33'
+    }
 
     today = getTimePeriod()
 
-    previous_pay_period = '12/16/18'
+    previous_pay_period = '06-17-18'
     cell_value = None
     pay_period = None
 
-    for date in pay_periods:
-        if today < datetime.strptime(date, '%m/%d/%y') and today > datetime.strptime(previous_pay_period, '%m/%d/%y'):
-            #pay_period = previous_pay_period #date as str
-            pay_period = date #date as str
-            #cell_value = pay_periods[previous_pay_period] #value of last dict key
-            print(type(pay_period))
-            return pay_period
+    for key, value in sorted(pay_periods.items()):
+        if today < key and today > previous_pay_period:
+            pay_period = previous_pay_period #date as str
+            cell_value = pay_periods[previous_pay_period] #value of last dict key
+            return pay_period, cell_value
+
+        previous_pay_period = key
 
 
 def getTurnInDate(pay_period_date):
@@ -89,7 +81,7 @@ def editExcel(workbook, percentage, code, pay_period, turn_in_date):
     hours_excel = workbook
     ws = hours_excel.active
 
-    ws['E7'] = pay_period
+    ws['E7'] = pay_period[1]
 
     #Gets active projects and sorts alphabetically
     def sortProjects():
@@ -116,7 +108,7 @@ def editExcel(workbook, percentage, code, pay_period, turn_in_date):
     row=12
     for pair in sorted_projects: 
         ws['B{}'.format(row)].value = pair[0]
-        ws['C{}'.format(row)].value = pair[1]
+        ws['C{}'.format(row)].value = float(pair[1])
         row += 1
 
     #Sets values for all empty rows
@@ -130,7 +122,7 @@ def editExcel(workbook, percentage, code, pay_period, turn_in_date):
 def addPercentage(percentage, code):
     pay_period = getPayPeriod()
 
-    turn_in_date = getTurnInDate(pay_period)
+    turn_in_date = getTurnInDate(pay_period[0])
 
     try:
         hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
@@ -141,7 +133,7 @@ def addPercentage(percentage, code):
 
 
 def clearWorkbook():
-    pay_period = getPayPeriod()
+    pay_period = getPayPeriod()[0]
     turn_in_date = getTurnInDate(pay_period)
     hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/template.xlsx')
     hours_excel.save('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
@@ -163,7 +155,7 @@ def loopScript(clear=None):
 
 
 if __name__ == '__main__':
-    codes = ['comm','web','prod','3dmss','hlit','psspt','vatl','prch1']
+    codes = ['comm','web','prod','3dmss','hlit','psspt','vatl','prch1', 'stlon']
 
     try:
         loopScript(sys.argv[1]) if len(sys.argv) > 1 else loopScript()
