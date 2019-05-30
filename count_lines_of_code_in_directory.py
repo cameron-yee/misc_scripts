@@ -27,10 +27,11 @@ def countLines(files):
 if __name__ == '__main__':
     directory = sys.argv[1] 
     file_extension = sys.argv[2]
-    recursive = sys.argv[3] == 'True'
+
+    recursive = sys.argv[3] if len(sys.argv) == 4 else True
 
     files = None
-    if recursive:
+    if recursive != 'False':
         files = getFilePathsRecursive(directory, file_extension)
     else:
         files = getFilePaths(directory, file_extension)
