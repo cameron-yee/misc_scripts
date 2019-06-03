@@ -32,18 +32,19 @@ def editExcel(workbook, json_data):
         comment_number = 1
 
         for comment in annotation['annotation']['comments']:
-            ws['{}3'.format(current_column)] = 'Comment {}'.format(comment_number)
+            ws['{}3'.format(current_column)] = 'Response {}'.format(comment_number)
             ws['{}{}'.format(current_column, current_row)] = comment['comment']['content']
 
+            #ord() returns the corresponding ASCII value of character and after adding integer to it, chr() again converts it into character.
             current_column = chr(ord(current_column) + 1) #https://www.geeksforgeeks.org/ways-increment-character-python/
 
-            ws['{}3'.format(current_column)] = 'Comment {} Author'.format(comment_number)
+            ws['{}3'.format(current_column)] = 'Response {} Author'.format(comment_number)
             ws['{}{}'.format(current_column, current_row)] = comment['comment']['author']
 
             comment_number += 1
+            current_column = chr(ord(current_column) + 1) #https://www.geeksforgeeks.org/ways-increment-character-python/
 
         current_row += 1
-
 
     wb.save(workbook)
 
