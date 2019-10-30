@@ -68,7 +68,8 @@ def getPayPeriod():
 
 
 def getTurnInDate(pay_period_date):
-    m = re.findall('([1-9]+)', pay_period_date)
+    m = re.findall('([0-9]+)', pay_period_date)
+    print(m)
     month = m[0]
     day = m[1]
     year = '20{}'.format(m[2])
@@ -77,11 +78,27 @@ def getTurnInDate(pay_period_date):
     return turn_in_date
 
 
-def editExcel(workbook, percentage, code, pay_period, turn_in_date):
-    hours_excel = workbook
+def editExcelStaticValues():
+    pay_period = getPayPeriod()
+
+    turn_in_date = getTurnInDate(pay_period[0])
+
+    try:
+        hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
+    except:
+        hours_excel = clearWorkbook()
+
     ws = hours_excel.active
 
     ws['E7'] = pay_period[1]
+    ws['B2'] = 'Cameron Yee'
+
+    hours_excel.save('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
+
+
+def editExcel(workbook, percentage, code, turn_in_date):
+    hours_excel = workbook
+    ws = hours_excel.active
 
     #Gets active projects and sorts alphabetically
     def sortProjects():
@@ -129,7 +146,23 @@ def addPercentage(percentage, code):
     except:
         hours_excel = clearWorkbook()
 
-    editExcel(hours_excel, percentage, code, pay_period, turn_in_date)
+    editExcel(hours_excel, percentage, code, turn_in_date)
+
+
+def addPTO(percentage):
+    pay_period = getPayPeriod()
+
+    turn_in_date = getTurnInDate(pay_period[0])
+
+    try:
+        hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
+    except:
+        hours_excel = clearWorkbook()
+
+    ws = hours_excel.active
+    ws['C11'] = float(percentage)
+
+    hours_excel.save('/Users/cyee/Documents/Timesheets/Timesheet_Cyee_{}.xlsx'.format(turn_in_date))
 
 
 def clearWorkbook():
@@ -140,40 +173,29 @@ def clearWorkbook():
     return hours_excel
 
 
-def loopScript(clear=None):
+def loopScript(clear=None, first=True):
     try:
         if clear == 'clear':
             clearWorkbook()
 
+        # Only call this once
+        if first:
+            editExcelStaticValues()
+
         percentage = inputPercentage()
         code = inputProjectCode()
-        addPercentage(percentage, code)
 
-        loopScript()
+        addPercentage(percentage, code) if code != 'pto' else addPTO(percentage)
+
+        loopScript(None, False)
     except KeyboardInterrupt:
         print('\nGoodbye Sir')
 
 
 if __name__ == '__main__':
-    codes = ['comm','web','prod','3dmss','hlit','psspt','vatl','prch1', 'stlon']
+    codes = ['comm','web','prod','3dmss','hlit','psspt','vatl','prch1', 'stlon', 'pto']
 
     try:
         loopScript(sys.argv[1]) if len(sys.argv) > 1 else loopScript()
     except KeyboardInterrupt:
         print('\nGoodbye Sir')
-
-
-
-
-
-
-
-
-
-#def fix_template():
-#    hours_excel = load_workbook('/Users/cyee/Documents/Timesheets/template.xlsx')
-#    ws = hours_excel.active
-#    ###ENTER FIX HERE
-#    hours_excel.save('/Users/cyee/Documents/Timesheets/template.xlsx')
-
-
